@@ -22,7 +22,6 @@ class IRCWrapper():
 
 	def pong(self):
 		didnt_pong = True
-		print('Trying to ping back.')
 		while didnt_pong:
 			data = self.irc_socket.recv(4096)
 			if data.find(b'PING :') != -1:
