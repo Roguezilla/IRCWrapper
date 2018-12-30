@@ -56,6 +56,4 @@ irc.pong()
 irc.join_channel('#E')
 
 threading.Thread(target=irc.handle_user_commands).start()
-t = threading.Thread(target=irc.read_msgs)
-t.daemon = True
-t.start()
+t = threading.Thread(target=irc.read_msgs); t.daemon = True; t.start()
