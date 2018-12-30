@@ -9,7 +9,7 @@ class IRCWrapper():
 		print('You can change channels by using the SWC command.')
 
 	def send_data(self, cmd):
-		self.irc_socket.send(cmd.encode('utf8') + b'\n')
+		self.irc_socket.send(bytes(cmd + '\n', 'utf8'))
 
 	def irc_conn(self, server, port):
 		self.irc_socket.connect((server, port))
@@ -36,7 +36,7 @@ class IRCWrapper():
 
 	def handle_user_commands(self):
 		while True:
-			buf = input('Command: ')
+			buf = input()
 			if buf == 'SWC':
 				irc.join_channel(input('Channel: '))
 			else:
@@ -47,7 +47,7 @@ class IRCWrapper():
 			msg = str.split(self.irc_socket.recv(1024).decode('utf8'))
 			if len(msg) > 3:
 				if msg[1] == 'PRIVMSG':
-					print('\n{0} in {1}'.format(msg[0].split('!')[0][1:], ' '.join(msg[2:]).replace(self.irc_channel + ' :', self.irc_channel + ' -> ')))
+					print('|{0} in {1}'.format(msg[0].split('!')[0][1:], ' '.join(msg[2:]).replace(self.irc_channel + ' :', self.irc_channel + ' -> ')))
 
 irc = IRCWrapper(socket.socket(socket.AF_INET, socket.SOCK_STREAM))
 irc.irc_conn('cathook.irc.inkcat.net', 8080)
@@ -56,4 +56,6 @@ irc.pong()
 irc.join_channel('#E')
 
 threading.Thread(target=irc.handle_user_commands).start()
-threading.Thread(target=irc.read_msgs).start()
+t = threading.Thread(target=irc.read_msgs)
+t.daemon = True
+t.start()
